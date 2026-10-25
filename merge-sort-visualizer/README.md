@@ -1,68 +1,60 @@
-<div align="center">
+# Merge Sort Visualizer
 
-# Hi, I'm Rudra Soni 👋
+An interactive web page that shows how **merge sort** works, one step at a time. Every number is a bar, and you can watch each comparison and move as the bars get sorted from shortest to tallest.
 
-<img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=26&duration=2600&pause=900&center=true&vCenter=true&width=650&lines=Computer+Science+Student;Python+%7C+Machine+Learning+%7C+Cybersecurity;75+Days+of+Code+Challenge;Building+and+Learning+Every+Day">
+**Live demo:** https://ruddy2310.github.io/DAA-LAB-MANUAL/merge-sort-visualizer/ (works after GitHub Pages is turned on, see "Deploy on GitHub Pages" below)
 
-<p>
-<a href="https://github.com/Ruddy2310"><img src="https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white"></a>
-<a href="YOUR_LINKEDIN"><img src="https://img.shields.io/badge/LinkedIn-0A66C2?style=for-the-badge&logo=linkedin&logoColor=white"></a>
-</p>
+## Features
 
-<img src="https://komarev.com/ghpvc/?username=Ruddy2310&label=PROFILE+VIEWS">
+- Play, Pause, Step and Shuffle controls
+- Adjustable number of bars (8 to 100) and speed
+- A plain-English line that explains every step as it happens
+- The current merge is highlighted, and bars outside it are dimmed
+- Live counters for comparisons and moves
+- Colors for being compared, placed in order, and final position
+- Light and dark mode
+- Keyboard shortcuts: `Space` play / pause, `→` step, `R` shuffle
+- An "Explain this project" side panel with a simplified version of the code, useful for presenting
 
-</div>
+## How merge sort works
 
----
+1. **Split** the list in half again and again, until every piece is a single bar. One bar is already sorted.
+2. **Merge** two sorted pieces into one by always taking the smaller of the two front bars.
+3. Keep merging bigger and bigger pieces until the whole list is one sorted run.
 
-## `~/` whoami
-
-I'm **Rudra Soni**, a Computer Science student focused on building practical projects and improving my skills through consistent coding.
-
-- 🚀 Currently building: **75 Days of Code Challenge**
-- 🧠 Learning: **Machine Learning, Deep Learning, Cybersecurity & DSA**
-- 🛠️ Turning concepts into working projects
-- ⚡ Goal: **Build. Learn. Repeat.**
-
-## 🧰 Toolbox
-
-<p align="center">
-<img src="https://skillicons.dev/icons?i=python,cpp,js,html,css,git,github,vscode,tensorflow&perline=9">
-</p>
-
-## 📊 Skill Radar
-
-<p align="center">
-<img src="assets/radar.svg" width="520" alt="Skill Radar">
-</p>
-
-## 📈 GitHub Activity
-
-<p align="center">
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=Ruddy2310&theme=github-compact&hide_border=true" width="95%" alt="GitHub activity graph">
-</p>
-
-## 🐍 Contribution Snake
-
-<p align="center">
-<img src="https://raw.githubusercontent.com/Ruddy2310/Ruddy2310/output/snake-dark.svg" alt="GitHub contribution snake">
-</p>
-
-## ⭐ Featured Projects
-
-| Project | Focus |
+| | |
 |---|---|
-| [75 Days of Code](https://github.com/Ruddy2310) | My ongoing coding challenge and learning journey |
-| ML / DL Projects | Machine learning and deep learning experiments |
-| Cybersecurity Projects | Hands-on security concepts and labs |
-| DSA Practice | Algorithms and problem solving |
+| Time complexity | O(n log n) in the best, average and worst case |
+| Space complexity | O(n) |
+| Stable | Yes |
 
-> Replace the last three entries with the exact repositories you want to feature.
+For 100 bars, merge sort needs only a few hundred comparisons. Bubble sort needs about 5,000 for the same list.
 
----
+## How it is built
 
-<div align="center">
+Each step of the algorithm is produced by a JavaScript generator function. The function pauses after every comparison and move using `yield`, so the page can draw that one step, update the counters, and write the explanation. This is what makes Play, Pause and Step possible.
 
-### 💻 Build. Learn. Repeat.
+It is a single `index.html` file with no libraries, no build step and no dependencies.
 
-</div>
+## Run it locally
+
+1. Download or clone this repository.
+2. Open `index.html` in any modern browser.
+
+That is all. No installation is needed.
+
+## Deploy on GitHub Pages
+
+1. Keep this project in the `merge-sort-visualizer` folder of the `DAA-LAB-MANUAL` repository.
+2. Go to the repository's **Settings → Pages**.
+3. Under **Build and deployment**, choose **Deploy from a branch**.
+4. Select your default branch (usually `main`) and the `/ (root)` folder, then save.
+5. After a minute, the page will be live at `https://ruddy2310.github.io/DAA-LAB-MANUAL/merge-sort-visualizer/`.
+
+## Project structure
+
+```
+merge-sort-visualizer/
+├── index.html   # the whole app: page, styles and logic
+└── README.md
+```
