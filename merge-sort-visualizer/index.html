@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Merge sort, one step at a time</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+:root{--bg:#f3eee4;--paper:#fcfaf5;--ink:#201c17;--mute:#7a7364;--line:#e1d8c6;--bar:#c9bda4;--cmp:#e9b44c;--swp:#e4572e;--ok:#3a7d44;--sh:0 1px 0 rgba(255,255,255,.7) inset,0 14px 30px -18px rgba(70,45,10,.35);color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16130f;--paper:#201c16;--ink:#f0e8d9;--mute:#a09681;--line:#3a3328;--bar:#6b6350;--swp:#f06a42;--ok:#58b36a;--sh:0 14px 30px -18px #000;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#16130f;--paper:#201c16;--ink:#f0e8d9;--mute:#a09681;--line:#3a3328;--bar:#6b6350;--swp:#f06a42;--ok:#58b36a;--sh:0 14px 30px -18px #000;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"DM Sans",system-ui,-apple-system,"Segoe UI",sans-serif;line-height:1.5}
+svg{width:18px;height:18px;fill:currentColor;flex:none}
+.wrap{max-width:860px;margin:0 auto;padding:26px 18px 56px}
+.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:22px}
+@media(max-width:560px){.top{flex-direction:column}}
+h1{font-family:Fraunces,Georgia,serif;font-weight:700;font-size:clamp(1.9rem,5vw,2.7rem);line-height:1.05;margin:0 0 8px;letter-spacing:-.015em}
+.lede{color:var(--mute);max-width:54ch;margin:0}
+.tools{display:flex;gap:10px;align-items:center;flex:none}
+.icon{all:unset;box-sizing:border-box;cursor:pointer;width:40px;height:40px;display:grid;place-items:center;border:1px solid var(--line);border-radius:50%;background:var(--paper);color:var(--ink);flex:none}
+.icon:hover{border-color:var(--ink)}
+.panel{background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh);padding:18px}
+.head{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{border:1px solid var(--line);border-radius:999px;padding:4px 12px;font-size:.82rem;color:var(--mute);background:var(--bg)}
+.chip b{color:var(--ink);font-variant-numeric:tabular-nums}
+#stage{height:320px;display:flex;align-items:flex-end;gap:3px;padding:22px 12px 0;border-radius:12px;background:var(--bg);background-image:repeating-linear-gradient(to top,transparent 0 calc(25% - 1px),var(--line) calc(25% - 1px) 25%);border-bottom:3px solid var(--ink)}
+#stage div{flex:1;background:var(--bar);position:relative;min-width:1px;border-radius:4px 4px 0 0;transition:background .1s,opacity .15s}
+#stage span{position:absolute;top:-17px;left:-4px;right:-4px;text-align:center;font-size:11px;color:var(--mute)}
+#stage.nonum span{display:none}
+#stage.big div{border-radius:2px 2px 0 0}
+#stage .c{background:var(--cmp)}#stage .s{background:var(--swp)}#stage .d{background:var(--ok)}
+#say{margin:14px 0 0;min-height:3.4em;display:flex;gap:12px;align-items:flex-start;font-size:1.03rem}
+#say:before{content:"";flex:none;width:10px;height:10px;border-radius:50%;margin-top:8px;background:var(--dot,var(--mute))}
+.key{display:flex;flex-wrap:wrap;gap:4px 16px;font-size:.8rem;color:var(--mute);margin:8px 0 0}
+.key i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.bar{display:flex;flex-wrap:wrap;gap:14px 22px;align-items:center;margin-top:16px;padding-top:16px;border-top:1px solid var(--line)}
+.btns{display:flex;gap:8px}
+.b{font:inherit;font-weight:700;display:inline-flex;gap:8px;align-items:center;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 14px;cursor:pointer}
+.b:hover{border-color:var(--ink)}
+.b.go{background:var(--swp);border-color:var(--swp);color:#fff;min-width:118px;justify-content:center}
+.b.go:hover{filter:brightness(.92)}
+.sl{display:flex;flex-direction:column;gap:2px;font-size:.78rem;color:var(--mute);min-width:120px}
+.sl div{display:flex;justify-content:space-between}.sl b{color:var(--ink)}
+input[type=range]{width:100%;height:18px;accent-color:var(--swp);margin:0;cursor:pointer}
+kbd{font:inherit;font-size:.74rem;border:1px solid var(--line);border-bottom-width:2px;border-radius:5px;padding:0 6px;background:var(--bg)}
+.hint{font-size:.78rem;color:var(--mute);margin:12px 0 0}
+.card{border:1px solid var(--line);border-radius:14px;padding:16px 18px;background:var(--paper);margin-top:18px}
+.card h3{font-family:Fraunces,Georgia,serif;font-size:1.1rem;margin:0 0 10px}
+.card ol{margin:0;padding:0;list-style:none;counter-reset:s}
+.card li{counter-increment:s;display:flex;gap:12px;margin-bottom:10px}
+.card li:before{content:counter(s);flex:none;width:24px;height:24px;border-radius:50%;background:var(--ink);color:var(--bg);font-size:.8rem;font-weight:700;display:grid;place-items:center;margin-top:1px}
+.card p{margin:0 0 6px}.fine{font-size:.82rem;color:var(--mute)}
+.scrim{position:fixed;inset:0;background:rgba(20,15,8,.45);opacity:0;pointer-events:none;transition:opacity .2s;z-index:20}
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(560px,100%);background:var(--paper);border-left:1px solid var(--line);z-index:21;transform:translateX(100%);visibility:hidden;transition:transform .25s,visibility 0s .25s;overflow-y:auto;padding:calc(20px + env(safe-area-inset-top,0px)) 22px calc(28px + env(safe-area-inset-bottom,0px))}
+body.open .scrim{opacity:1;pointer-events:auto}
+body.open .drawer{transform:none;visibility:visible;transition-delay:0s}
+.dh{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.dh h2{font-family:Fraunces,Georgia,serif;font-size:1.4rem;margin:0}
+.drawer h4{font-family:Fraunces,Georgia,serif;font-size:1.02rem;margin:20px 0 8px;padding-top:16px;border-top:1px solid var(--line)}
+.drawer p,.drawer li{font-size:.94rem;margin:0 0 8px}
+.drawer ol{padding-left:20px;margin:0}
+.tg{display:flex;flex-wrap:wrap;gap:6px}
+.tg span{border:1px solid var(--line);background:var(--bg);border-radius:999px;padding:3px 12px;font-size:.82rem}
+.drawer pre{margin:8px 0;padding:12px 14px;background:var(--bg);border:1px solid var(--line);border-radius:10px;font:12.5px/1.6 ui-monospace,Menlo,Consolas,monospace;overflow-x:auto;white-space:pre}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top">
+<div><h1>Merge sort, one step at a time</h1><p class="lede">Every bar is a number. The goal: shortest on the left, tallest on the right. Watch merge sort get there by splitting the bars and merging them back in order.</p></div>
+<div class="tools"><button class="b" id="about"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm1 15h-2v-6h2zm0-8h-2V7h2z"/></svg>Explain this project</button><button class="icon" id="theme" title="Switch light / dark" aria-label="Switch theme"><svg viewBox="0 0 24 24"><path d="M20 14.5A8 8 0 019.5 4 8 8 0 1020 14.5z"/></svg></button></div>
+</div>
+<div class="panel">
+<div class="head"><div class="chips"><span class="chip"><b id="nc">0</b> comparisons</span><span class="chip"><b id="nm">0</b> moves</span></div></div>
+<div id="stage"></div>
+<p id="say"></p>
+<div class="key"><span><i style="background:var(--cmp)"></i>being compared</span><span><i style="background:var(--swp)"></i>placed in order</span><span><i style="background:var(--ok)"></i>final</span><span><i style="background:var(--bar);opacity:.4"></i>not part of this merge</span></div>
+<div class="bar">
+<div class="btns"><button class="b go" id="play"></button><button class="b" id="step"><svg viewBox="0 0 24 24"><path d="M6 5v14l9-7zM17 5h2v14h-2z"/></svg>Step</button><button class="b" id="shuf"><svg viewBox="0 0 24 24" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round"><path d="M3 7h4l10 10h4M3 17h4l3-3M14 10l3-3h4M18 4l3 3-3 3M18 14l3 3-3 3"/></svg>Shuffle</button></div>
+<label class="sl"><div><span>Bars</span><b id="sizeV"></b></div><input type="range" id="size" min="8" max="100" value="16"></label>
+<label class="sl"><div><span>Speed</span><b id="speedV"></b></div><input type="range" id="speed" min="1" max="100" value="40"></label>
+</div>
+<p class="hint"><kbd>Space</kbd> play / pause &nbsp; <kbd>→</kbd> step &nbsp; <kbd>R</kbd> shuffle</p>
+</div>
+<div class="card"><h3>How merge sort works</h3>
+<ol>
+<li><span>Split the list in half again and again, until every piece is a single bar. One bar is already sorted.</span></li>
+<li><span>Merge two sorted pieces into one. Look at the first bar of each piece and always take the smaller one.</span></li>
+<li><span>Keep merging bigger and bigger pieces until the whole list is one sorted run.</span></li>
+</ol>
+<p class="fine">Good for big lists, because it stays fast. It needs extra space to merge. Steps grow roughly with n × log n.</p>
+</div>
+</div>
+<div class="scrim" id="scrim"></div>
+<aside class="drawer" aria-label="About this project">
+<div class="dh"><h2>About this project</h2><button class="icon" id="close" aria-label="Close"><svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18" style="fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round"/></svg></button></div>
+<h4>What it is</h4>
+<p>An interactive page that shows how merge sort works, one step at a time. You can watch every comparison and every move.</p>
+<h4>The main idea</h4>
+<p>Each number is a bar. A taller bar means a bigger number. Sorting means arranging the bars from shortest to tallest.</p>
+<h4>How I built it</h4>
+<ol>
+<li>Made a random list of numbers and showed each number as a bar.</li>
+<li>Made merge sort run one small step at a time, so it can be paused and stepped through.</li>
+<li>After every step, the bars change color and a simple line explains what happened.</li>
+<li>Added counters, so we can see how many comparisons it needs.</li>
+</ol>
+<h4>Why merge sort is fast</h4>
+<p>With 100 bars it needs only a few hundred comparisons. Bubble sort needs about 5,000 for the same list.</p>
+<h4>The code (simplified)</h4>
+<pre>function* mergeSort(a, l, r) {
+  if (r &lt;= l) return;                  // one bar is already sorted
+  const m = Math.floor((l + r) / 2);     // find the middle
+
+  yield* mergeSort(a, l, m);             // sort the left half
+  yield* mergeSort(a, m + 1, r);         // sort the right half
+
+  const L = a.slice(l, m + 1);           // copy of left half
+  const R = a.slice(m + 1, r + 1);       // copy of right half
+  let i = 0, j = 0, k = l;
+
+  while (i &lt; L.length &amp;&amp; j &lt; R.length) {
+    yield 'compare';                     // pause so the page can show it
+    a[k++] = L[i] &lt;= R[j] ? L[i++] : R[j++];  // take the smaller bar
+  }
+  while (i &lt; L.length) a[k++] = L[i++];  // left bars still remaining
+  while (j &lt; R.length) a[k++] = R[j++];  // right bars still remaining
+}</pre>
+<p>Both halves get sorted first, then they are merged by always taking the smaller front bar. The yield line pauses the code, so the page can show each step.</p>
+<h4>How to present it</h4>
+<ol>
+<li>Press Play at 16 bars and explain the colors.</li>
+<li>Use Step a few times and read the explanation line out loud.</li>
+<li>Set bars to 100 and run it fast. Point at the comparison counter.</li>
+</ol>
+</aside>
+<script>
+function*merge(a,l=0,r=a.length-1){if(r<=l)return;const m=(l+r)>>1;yield*merge(a,l,m);yield*merge(a,m+1,r);yield['range',l,r];const L=a.slice(l,m+1),R=a.slice(m+1,r+1);let i=0,j=0,k=l;
+while(i<L.length&&j<R.length){yield['cmp',l+i,m+1+j,L[i],R[j]];a[k]=L[i]<=R[j]?L[i++]:R[j++];yield['set',k++]}
+while(i<L.length){a[k]=L[i++];yield['set',k++]}while(j<R.length){a[k]=R[j++];yield['set',k++]}}
+const $=id=>document.getElementById(id);
+const IC={play:'<svg viewBox="0 0 24 24"><path d="M7 5v14l12-7z"/></svg>',pause:'<svg viewBox="0 0 24 24"><path d="M7 5h4v14H7zM13 5h4v14h-4z"/></svg>'};
+let arr=[],gen=null,timer=null,running=false,finished=false,cmp=0,mv=0,hl={},done=new Set(),rng=null;
+const stage=$("stage");
+function setPlay(t,ic){$("play").innerHTML=IC[ic]+t}
+function build(){stage.innerHTML="";arr.forEach(()=>{const d=document.createElement("div");d.appendChild(document.createElement("span"));stage.appendChild(d)});stage.className=(arr.length>32?"nonum ":"")+(arr.length>50?"big":"");stage.style.gap=arr.length>50?"1px":"3px"}
+function draw(){const n=arr.length;[...stage.children].forEach((el,i)=>{el.style.height=(arr[i]/n*100)+"%";el.className=done.has(i)?"d":hl[i]||"";el.style.opacity=rng&&(i<rng[0]||i>rng[1])?.35:1;el.firstChild.textContent=arr[i]})}
+function say(t,c){$("say").textContent=t;$("say").style.setProperty("--dot",`var(--${c})`)}
+function counts(){$("nc").textContent=cmp;$("nm").textContent=mv}
+function reset(){stop();const n=+$("size").value;arr=Array.from({length:n},(_,i)=>i+1);for(let i=n-1;i>0;i--){const j=Math.random()*(i+1)|0;[arr[i],arr[j]]=[arr[j],arr[i]]}
+cmp=mv=0;hl={};done=new Set();rng=null;finished=false;gen=merge(arr);counts();say("Ready. Press Play, or use Step to go one move at a time.","mute");build();draw();setPlay("Play","play");$("sizeV").textContent=n}
+function tick(){const e=gen.next();hl={};if(e.done){finish();return false}
+const[t,x,y,v1,v2]=e.value;
+if(t==="range"){rng=[x,y];say(`Now merging bars ${x+1} to ${y+1}. Two sorted pieces will become one sorted piece.`,"mute")}
+else if(t==="cmp"){cmp++;hl[x]="c";hl[y]="c";say(`Which comes first, ${v1} or ${v2}? The smaller one goes next.`,"cmp")}
+else if(t==="set"){mv++;hl[x]="s";say(`${arr[x]} is placed into the merged piece.`,"swp")}
+counts();return true}
+function finish(){finished=true;running=false;rng=null;hl={};let i=0;const n=arr.length;setPlay("Run again","play");say(`Sorted! It took ${cmp} comparisons and ${mv} moves.`,"ok");
+(function s(){if(!finished)return;done.add(i++);draw();if(i<n)timer=setTimeout(s,Math.max(4,500/n))})()}
+function loop(){if(!running)return;const sp=+$("speed").value,batch=Math.ceil(sp/25);for(let i=0;i<batch;i++){if(!tick())return}draw();timer=setTimeout(loop,Math.max(8,Math.round(900/sp)))}
+function stop(){running=false;clearTimeout(timer)}
+function toggle(){if(finished){reset()}if(running){stop();setPlay("Resume","play");return}running=true;setPlay("Pause","pause");loop()}
+function step(){if(finished)return;stop();setPlay("Resume","play");if(tick())draw()}
+$("play").onclick=toggle;$("step").onclick=step;$("shuf").onclick=reset;$("size").oninput=reset;
+$("speed").oninput=()=>{$("speedV").textContent=$("speed").value+"%"};$("speedV").textContent=$("speed").value+"%";
+document.addEventListener("keydown",e=>{if(e.key==="Escape"){document.body.classList.remove("open");return}if(e.target.closest("button")||e.metaKey||e.ctrlKey||document.body.classList.contains("open"))return;if(e.code==="Space"){e.preventDefault();toggle()}else if(e.key==="ArrowRight"){step()}else if(e.key.toLowerCase()==="r"){reset()}});
+$("theme").onclick=()=>{const r=document.documentElement,dark=r.dataset.theme?r.dataset.theme==="dark":matchMedia("(prefers-color-scheme:dark)").matches;r.dataset.theme=dark?"light":"dark"};
+$("about").onclick=()=>document.body.classList.add("open");
+$("close").onclick=$("scrim").onclick=()=>document.body.classList.remove("open");
+reset();
+</script>
+</body>
+</html>
