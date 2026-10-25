@@ -2,7 +2,7 @@
 
 An interactive web page that shows how **merge sort** works, one step at a time. Every number is a bar, and you can watch each comparison and move as the bars get sorted from shortest to tallest.
 
-**Live demo:** https://ruddy2310.github.io/DAA-LAB-MANUAL/merge-sort-visualizer/ (works after GitHub Pages is turned on, see "Deploy on GitHub Pages" below)
+**Live demo:** https://daa-lab-manual-merge-sort-visualize-nu.vercel.app
 
 ## Features
 
@@ -39,17 +39,20 @@ It is a single `index.html` file with no libraries, no build step and no depende
 ## Run it locally
 
 1. Download or clone this repository.
-2. Open `index.html` in any modern browser.
+2. Open `merge-sort-visualizer/index.html` in any modern browser.
 
 That is all. No installation is needed.
 
-## Deploy on GitHub Pages
+## Deploy on Vercel
 
-1. Keep this project in the `merge-sort-visualizer` folder of the `DAA-LAB-MANUAL` repository.
-2. Go to the repository's **Settings → Pages**.
-3. Under **Build and deployment**, choose **Deploy from a branch**.
-4. Select your default branch (usually `main`) and the `/ (root)` folder, then save.
-5. After a minute, the page will be live at `https://ruddy2310.github.io/DAA-LAB-MANUAL/merge-sort-visualizer/`.
+This project lives in a folder of a larger repository, so Vercel needs to know where it is.
+
+1. In Vercel, click **New Project** and import this repository.
+2. Next to **Root Directory**, click **Edit** and choose `merge-sort-visualizer`.
+3. Set **Framework Preset** to **Other**.
+4. Leave Build Command and Output Directory empty, then click **Deploy**.
+
+Every push to the `main` branch updates the live site automatically.
 
 ## Project structure
 
